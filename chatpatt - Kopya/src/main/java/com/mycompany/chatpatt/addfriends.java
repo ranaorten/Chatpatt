@@ -1,0 +1,385 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package com.mycompany.chatpatt;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class addfriends extends javax.swing.JFrame {
+
+      public void Insert(int user_id1, String friendusername) throws SQLException {
+        Connection connect = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        db dbb = new db();
+        try {
+            connect = dbb.getConnection();
+            // Kullanıcının daha önce eklenip eklenmediğini kontrol et
+            String checkSql = "SELECT COUNT(*) AS count FROM friendships WHERE user_id1 = ? AND username = ?";
+            statement = connect.prepareStatement(checkSql);
+            statement.setInt(1, user_id1);
+            statement.setString(2, friendusername);
+            resultSet = statement.executeQuery();
+            if (resultSet.next() && resultSet.getInt("count") > 0) {
+                JOptionPane.showMessageDialog(null, "Bu kullanıcı zaten arkadaş listenizde.");
+                return;
+            }
+
+            // Kullanıcı daha önce eklenmemişse, ekleme işlemi yap
+            String insertSql = "INSERT INTO friendships (user_id1, username) VALUES (?, ?)";
+            statement = connect.prepareStatement(insertSql);
+            statement.setInt(1, user_id1);
+            statement.setString(2, friendusername);
+            statement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Arkadaş başarıyla eklendi!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Veritabanı hatası: " + e.getMessage());
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connect != null) {
+                connect.close();
+            }
+        }
+    }
+
+    public boolean kisivarmi(String username) {
+        Connection conn = null;
+        try {
+            db dbb = new db();
+            conn = dbb.getConnection(); // Bağlantı alma kısmı düzeltildi
+            if (conn == null) {
+                System.out.println("Database connection failed!");
+                return false;
+            }
+
+            String sql = "SELECT * FROM user WHERE username = ?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true; // Kullanıcı adı doğru
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false; // Kullanıcı adı yanlış
+    }
+ public boolean arkadasvarmi(String username) {
+        Connection conn = null;
+        try {
+            db dbb = new db();
+            conn = dbb.getConnection(); // Bağlantı alma kısmı düzeltildi
+            if (conn == null) {
+                System.out.println("Database connection failed!");
+                return false;
+            }
+
+            String sql = "SELECT * FROM friendships WHERE username = ?";
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true; // Kullanıcı adı doğru
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false; // Kullanıcı adı yanlış
+    }
+    public addfriends() {
+        initComponents();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        userr = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        delete = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(400, 550));
+
+        jPanel1.setBackground(new java.awt.Color(162, 171, 195));
+        jPanel1.setPreferredSize(new java.awt.Dimension(400, 500));
+        jPanel1.setLayout(null);
+
+        userr.setBackground(new java.awt.Color(238, 240, 252));
+        userr.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), "username", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Black", 0, 14))); // NOI18N
+        userr.setDisabledTextColor(new java.awt.Color(162, 171, 195));
+        userr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userrActionPerformed(evt);
+            }
+        });
+        jPanel1.add(userr);
+        userr.setBounds(70, 170, 231, 44);
+
+        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel4.setFont(new java.awt.Font("Agency FB", 1, 48)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("CHATPATT");
+        jLabel4.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(100, 10, 180, 50);
+
+        jLabel5.setBackground(new java.awt.Color(153, 0, 153));
+        jLabel5.setFont(new java.awt.Font("Agency FB", 1, 48)); // NOI18N
+        jLabel5.setText("CHATPATT");
+        jLabel5.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(100, 10, 190, 58);
+
+        jButton1.setBackground(new java.awt.Color(238, 240, 252));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Rana\\Documents\\NetBeansProjects\\chatpatt\\src\\İCON\\friends.png")); // NOI18N
+        jButton1.setText("my friends");
+        jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(60, 330, 120, 40);
+
+        jButton2.setBackground(new java.awt.Color(238, 240, 252));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Rana\\Documents\\NetBeansProjects\\chatpatt\\src\\İCON\\home.png")); // NOI18N
+        jButton2.setText("home page");
+        jButton2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton2);
+        jButton2.setBounds(190, 330, 120, 40);
+
+        delete.setBackground(new java.awt.Color(238, 240, 252));
+        delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        delete.setIcon(new javax.swing.ImageIcon("C:\\Users\\Rana\\Documents\\NetBeansProjects\\chatpatt\\src\\İCON\\delete.png")); // NOI18N
+        delete.setText("delete friends");
+        delete.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteActionPerformed(evt);
+            }
+        });
+        jPanel1.add(delete);
+        delete.setBounds(190, 270, 120, 40);
+
+        jButton4.setBackground(new java.awt.Color(238, 240, 252));
+        jButton4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton4.setIcon(new javax.swing.ImageIcon("C:\\Users\\Rana\\Documents\\NetBeansProjects\\chatpatt\\src\\İCON\\new friends.png")); // NOI18N
+        jButton4.setText("add friend");
+        jButton4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton4);
+        jButton4.setBounds(60, 270, 120, 40);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 207, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 33, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void userrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userrActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_userrActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        ana anaFrame = new ana();
+        anaFrame.setVisible(true);
+        anaFrame.pack();
+        anaFrame.setLocationRelativeTo(null);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
+String friendusername = userr.getText();
+        int user_id1 = UserSession.getInstance().getUserId();
+
+        if (!friendusername.isEmpty() && arkadasvarmi(friendusername)) {
+            deleteFriend(user_id1, friendusername);
+        } else {
+            JOptionPane.showMessageDialog(this, "Böyle bir kullanıcı bulunamadı veya kullanıcı adı boş.");
+        }
+        
+
+    }//GEN-LAST:event_deleteActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        String friendusername = userr.getText();
+        int user_id1 = UserSession.getInstance().getUserId();
+
+        if (!friendusername.isEmpty() && kisivarmi(friendusername)) {
+            try {
+                Insert(user_id1, friendusername);
+            } catch (SQLException ex) {
+                Logger.getLogger(addfriends.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Veritabanı hatası: " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Böyle bir kullanıcı bulunamadı veya kullanıcı adı boş.");
+        }
+
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+         friends friendsFrame = new friends();
+        friendsFrame.setVisible(true);
+        friendsFrame.pack();
+        friendsFrame.setLocationRelativeTo(null);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+ public void deleteFriend(int user_id1, String friendusername) {
+        Connection connect = null;
+        PreparedStatement statement = null;
+        try {
+            db dbb = new db();
+            connect = dbb.getConnection();
+            String deleteSql = "DELETE FROM friendships WHERE user_id1 = ? AND username = ?";
+            statement = connect.prepareStatement(deleteSql);
+            statement.setInt(1, user_id1);
+            statement.setString(2, friendusername);
+
+            int result = statement.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(null, "Arkadaş başarıyla silindi!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Bu kullanıcı arkadaş listenizde bulunamadı.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Veritabanı hatası: " + e.getMessage());
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connect != null) {
+                try {
+                    connect.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(addfriends.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(addfriends.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(addfriends.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(addfriends.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new addfriends().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton delete;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField userr;
+    // End of variables declaration//GEN-END:variables
+
+}
